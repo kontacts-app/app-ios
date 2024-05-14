@@ -50,7 +50,6 @@ struct ContactDetailView : View {
                         Button(String(localized: "Edit button"), action: {
                             // viewModel.update(contact: Contact(id: contact.id, name: name))
                             viewModel.update(contact: Contact(id: contact.id, name: editContactNameDialogValue.trimmingCharacters(in: .whitespacesAndNewlines)))
-                            viewModel.refresh()
                             isEditContactNameDialogPresented = false
                         })
                             //.disabled(name.isEmpty)
@@ -79,7 +78,6 @@ struct ContactDetailView : View {
                         primaryButton: .destructive(Text(String(localized: "Delete button"))) {
                             viewModel.remove(id: contact.id)
                             isDeleteAlertPresented = false
-                            viewModel.refresh()
                             presentationMode.wrappedValue.dismiss()
                         },
                         secondaryButton: .cancel {

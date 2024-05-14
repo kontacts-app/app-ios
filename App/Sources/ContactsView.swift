@@ -51,7 +51,6 @@ struct ContactsView : View {
                             offsets.forEach { i in
                                 viewModel.remove(id: section.contacts[i].id)
                             }
-                            viewModel.refresh()
                         })
                     }
                 }
@@ -77,7 +76,6 @@ struct ContactsView : View {
                             Button(action: {
                                 //viewModel.add(new: NewContact(name: contactNameFieldValueResult))
                                 viewModel.add(new: NewContact(name: contactNameFieldValue.trimmingCharacters(in: .whitespacesAndNewlines)))
-                                viewModel.refresh()
                                 isAddContactAlertPresented = false
                             }, label: { Text(String(localized: "Create dialog button")) })
                             //.disabled(isAddContactAlertCreateButtonDisabled)
@@ -89,9 +87,6 @@ struct ContactsView : View {
                     )
                 }
             }
-        }
-        .task {
-            viewModel.refresh()
         }
     }
 }

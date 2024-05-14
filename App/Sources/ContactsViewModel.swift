@@ -8,23 +8,29 @@
 
 import SwiftUI
 import Repository
+import Combine
 
 class ContactsViewModel : ObservableObject {
     
-    @Published var sections = [ContactsSection]()
-    
     private let repository: ContactsRepository
+    
+    @Published private(set) var sections: [ContactsSection] = []
+    
+    private var cancellables = Set<AnyCancellable>()
     
     init(repository: ContactsRepository) {
         self.repository = repository
+        
+        repository.observeSections()
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] sections in
+                self?.sections = sections
+            })
+            .store(in: &cancellables)
     }
     
-    func refresh() {
-        sections = repository.get()
-    }
-    
-    func get(id: ContactId) -> Contact {
-        repository.get(id: id)
+    func observe(byId id: ContactId) -> AnyPublisher<Contact?, Never> {
+        repository.observe(byId: id)
     }
     
     func add(new contact: NewContact) {
