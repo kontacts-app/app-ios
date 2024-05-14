@@ -1,6 +1,6 @@
 import ProjectDescription
 
-private let baseBundleId = "red.razvan.contactsmultiplatform"
+private let baseBundleId = "red.razvan.kontacts"
 
 let project = Project(
     name: "Contacts",
