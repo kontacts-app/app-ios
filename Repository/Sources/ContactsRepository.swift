@@ -7,35 +7,54 @@
 //
 
 import Combine
+import Client
 
 public final class ContactsRepository {
     
+    private let client: KontactsClient
+    
     private let contacts = CurrentValueSubject<[ContactId: Contact], Never>(
-        mockContacts
-            .map { contact in
-                (contact.id, contact)
-            }
-            .reduce(into: [:]) { dictionary, tuple in
-                dictionary[tuple.0] = tuple.1
-            }
+        [:]
     )
     
-    public init() { }
+    public init(client: KontactsClient) {
+        self.client = client
+    }
+    
+    public func refreshContacts() {
+        let remote = client.getAll()
+        self.contacts.send(
+            remote
+                .map { contact in contact.toModel() }
+                .map { contact in
+                    (contact.id, contact)
+                }
+                .reduce(into: [:]) { dictionary, tuple in
+                    dictionary[tuple.0] = tuple.1
+                }
+        )
+    }
     
     public func add(new contact: NewContact) {
+        let remoteCreated = client.addNewContact(contact.toRemote())
+        let created = remoteCreated.toModel()
         var contacts = contacts.value
-        let id = ContactId()
-        contacts[id] = Contact(id: id, name: contact.name)
+        contacts[created.id] = created
         self.contacts.send(contacts)
     }
     
     public func update(contact: Contact) {
+        let remoteUpdated = client.updateById(
+            id: contact.id.value,
+            contact: RemoteNewContact(name: contact.name)
+        )
         var contacts = contacts.value
-        contacts[contact.id] = contact
+        contacts[contact.id] = remoteUpdated.toModel()
         self.contacts.send(contacts)
     }
     
     public func remove(id: ContactId) {
+        client.deleteById(id.value)
         var contacts = contacts.value
         contacts.removeValue(forKey: id)
         self.contacts.send(contacts)

@@ -28,6 +28,17 @@ let project = Project(
             bundleId: "\(baseBundleId).repository",
             sources: ["Repository/Sources/**"],
             resources: [],
+            dependencies: [
+                .target(name: "Client")
+            ]
+        ),
+        .target(
+            name: "Client",
+            destinations: .iOS,
+            product: .framework,
+            bundleId: "\(baseBundleId).client",
+            sources: ["Client/Sources/**"],
+            resources: [],
             dependencies: []
         )
     ]

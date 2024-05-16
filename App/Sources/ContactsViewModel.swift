@@ -29,6 +29,10 @@ class ContactsViewModel : ObservableObject {
             .store(in: &cancellables)
     }
     
+    func fetch() {
+        repository.refreshContacts()
+    }
+    
     func observe(byId id: ContactId) -> AnyPublisher<Contact?, Never> {
         repository.observe(byId: id)
     }

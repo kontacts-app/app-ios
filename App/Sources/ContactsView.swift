@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Repository
+import Client
 
 struct ContactsView : View {
     
@@ -19,7 +20,7 @@ struct ContactsView : View {
     // Hopefully iOS 25.1 will bring us a working SwiftUI implementation.
     
     @StateObject
-    var viewModel: ContactsViewModel = ContactsViewModel(repository: ContactsRepository())
+    var viewModel: ContactsViewModel = ContactsViewModel(repository: ContactsRepository(client: KontactsClient()))
     
     @State
     private var isAddContactAlertPresented: Bool = false
@@ -88,6 +89,9 @@ struct ContactsView : View {
                 }
             }
         }
+        .task {
+            viewModel.fetch()
+        }
     }
 }
 
@@ -100,7 +104,7 @@ fileprivate struct InitialHeader : View {
 }
 
 fileprivate struct ContactRow : View {
-    let contact: Contact
+    let contact: Repository.Contact
     
     var body: some View {
         Text(contact.name)
